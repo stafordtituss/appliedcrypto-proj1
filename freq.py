@@ -8,4 +8,4 @@ for k in pT:
             all_freq[i] += 1
         else:
             all_freq[i] = 1 
-    print ("Plaintext Frequency Analysis:\n " +  str(all_freq))
+    print (str(all_freq))

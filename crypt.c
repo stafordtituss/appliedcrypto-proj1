@@ -1,12 +1,36 @@
 #include <stdio.h>
-int main() {
+#include <string.h>
 
-   char str[1000];
 
-   printf( "Enter the Ciphertext: ");
-   scanf("%s", str);
+void printFrequency(int freq[])
 
-   printf( "\nMy Plaintext guess is: %s\n", str);
+{
+	for (int i = 0; i < 26; i++) {
+		if (freq[i] != 0) {
+			printf("%c - %d\n", i + 'a', freq[i]);
+		}
+	}
+}
 
-   return 0;
+void findFrequncy(char S[])
+{
+	int i = 0;
+
+	int freq[26] = { 0 };
+
+	while (S[i] != '\0') {
+		freq[S[i] - 'a']++;
+		i++;
+	}
+
+	printFrequency(freq);
+}
+
+int main()
+{
+	char S[800];
+   printf("enter the CipherText: ");
+   scanf("%s", S);
+	findFrequncy(S);
+   // printf("The PlainText is: %s\n", );
 }
