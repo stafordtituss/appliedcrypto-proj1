@@ -10,7 +10,7 @@ alphabet = {
     'y': 25, 'z': 26
 }
 
-def encrypt(message, key, random_substitution):
+def encrypt(message, key, shift):
     
     ciphertext = ''
 
@@ -24,7 +24,7 @@ def encrypt(message, key, random_substitution):
         else:
             letter = ord(message[char]) - ord('a') + 1
 
-        ciphertext += list(alphabet.keys())[list(alphabet.values()).index((letter + key[(char + 1) % random_substitution]) % 27)]
+        ciphertext += list(alphabet.keys())[list(alphabet.values()).index((letter + key[(char + 1) % shift]) % 27)]
 
     return ciphertext
 
@@ -43,11 +43,11 @@ def decrypt_helper(plaintext_guess, ciphertext):
     
     success = 0
     key_len = 1
-    random_substitution_length = 24
+    shift_length = 24
     
     # verify key length
 
-    while key_len < random_substitution_length:
+    while key_len < shift_length:
         
         correct = 0
         
@@ -91,7 +91,7 @@ def decrypt(ciphertext, plaintext_dict):
 
 def main():
 
-    file_contents = {
+    dictionary_1 = {
 
         0: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
         1: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
@@ -100,22 +100,66 @@ def main():
         4: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
     }
 
-    # select plaintext randomly
-    random_substitution = random.choice(range(1 ,24))
-    plaintext_sample = random.choice(range(0, 4))
-    message = file_contents[plaintext_sample]
+    dictionary_2 = {
 
-    key = [random.choice(range(0 ,26)) for i in range(random_substitution)]
+        0: 'lacrosses',
+        1: 'protectional',
+        2: 'blistered',
+        3: 'leaseback',
+        4: 'assurers',
+        5: 'frizzlers',
+        6: 'submerse',
+        7: 'rankness',
+        8: 'moonset',
+        9: 'farcer',
+        10: 'brickyard',
+        11: 'stolonic',
+        12: 'trimmings',
+        13: 'glottic',
+        14: 'rotates',
+        15: 'twirlier',
+        16: 'stuffer',
+        17: 'publishable',
+        18: 'invalided',
+        19: 'harshens',
+        20: 'tortoni',
+        21: 'unlikely',
+        22: 'alefs',
+        23: 'gladding',
+        24: 'favouring',
+        25: 'particulate',
+        26: 'baldpates',
+        27: 'changeover',
+        28: 'lingua',
+        29: 'proctological',
+        30: 'freaking',
+        31: 'outflanked',
+        32: 'amulets',
+        33: 'imagist',
+        34: 'hyped',
+        35: 'pilfers',
+        36: 'overachiever',
+        37: 'clarence',
+        38: 'outdates',
+        39: 'smeltery'
+    }
+
+    # select plaintext randomly
+    shift = random.choice(range(1 ,24))
+    plaintext_sample = random.choice(range(0, 4))
+    message = dictionary_1[plaintext_sample]
+
+    key = [random.choice(range(0 ,26)) for i in range(shift)]
 
     # print('plaintext is: ', message)
     
     # Generating cipher from plaintext
-    # test_cipher = encrypt(message, key, random_substitution)
+    # test_cipher = encrypt(message, key, shift)
     # print('cipher is: ')
     # print(test_cipher)
 
     cipher = input('Enter the ciphertext: ')
     print('Original plaintext is: ')
-    print(decrypt(cipher, file_contents))
+    print(decrypt(cipher, dictionary_1))
 
 main()
