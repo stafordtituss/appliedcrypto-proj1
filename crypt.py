@@ -91,14 +91,14 @@ def decrypt(ciphertext, plaintext_dict):
 
 def main():
 
-    file_contents = {}
-    
-    # open dictionary 1 reading just the plaintext, storing in a dictionary called file_contents
-    with open('dictionary_1.txt', 'r') as f:
-        contents = f.readlines()[4::4]
+    file_contents = {
 
-        for key, value in enumerate(contents, 0):
-            file_contents[key] = value.strip()
+        0: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
+        1: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
+        2: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
+        3: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
+        4: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
+    }
 
     # select plaintext randomly
     random_substitution = random.choice(range(1 ,24))
@@ -110,14 +110,12 @@ def main():
     # print('plaintext is: ', message)
     
     # Generating cipher from plaintext
-    test_cipher = encrypt(message, key, random_substitution)
+    # test_cipher = encrypt(message, key, random_substitution)
     # print('cipher is: ')
     # print(test_cipher)
 
     cipher = input('Enter the ciphertext: ')
     print('Original plaintext is: ')
     print(decrypt(cipher, file_contents))
-
-    f.close()
 
 main()
