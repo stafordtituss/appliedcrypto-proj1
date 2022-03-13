@@ -10,6 +10,17 @@ alphabet = {
     'y': 25, 'z': 26
 }
 
+def build_distribution(ciphertext):
+    
+    # initiliazed distribution
+    distribution = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+    for char in ciphertext:
+
+        distribution[alphabet[char]] += 1
+
+    return distribution
+
 def encrypt(message, key, shift):
     
     ciphertext = ''
@@ -28,16 +39,22 @@ def encrypt(message, key, shift):
 
     return ciphertext
 
-def build_distribution(ciphertext):
+def decrypt(ciphertext, plaintext_dict):
+
+    success = 0
+    correct_index = 0
+
+    # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
+    for key, value in plaintext_dict.items():
+        
+        current = decrypt_helper(value, ciphertext)
+        
+        if current > success:
+            
+            correct_index = key
+            success = current
     
-    # initiliazed distribution
-    distribution = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-
-    for char in ciphertext:
-
-        distribution[alphabet[char]] += 1
-
-    return distribution
+    return plaintext_dict[correct_index]
 
 def decrypt_helper(plaintext_guess, ciphertext):
     
@@ -71,23 +88,6 @@ def decrypt_helper(plaintext_guess, ciphertext):
         success = max(success, correct)
 
     return success
-
-def decrypt(ciphertext, plaintext_dict):
-
-    success = 0
-    correct_index = 0
-
-    # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
-    for key, value in plaintext_dict.items():
-        
-        current = decrypt_helper(value, ciphertext)
-        
-        if current > success:
-            
-            correct_index = key
-            success = current
-    
-    return plaintext_dict[correct_index]
 
 def main():
 
