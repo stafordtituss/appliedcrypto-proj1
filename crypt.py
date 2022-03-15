@@ -89,15 +89,81 @@ def decrypt_helper(plaintext_guess, ciphertext):
 
     return success
 
+################################ TASK 2 FUNCTIONS #######################################
+
+def subkey(cipher, t):
+    subkeys = ["" for poss_t in range(t)]
+    for i in range(len(cipher)):
+        subkeys[i % t] += cipher[i]
+    return subkeys
+
+#Using Index of Coincidence approach
+def coincidence(poss_key):
+    num = build_distribution(poss_key)
+    upper = sum([x * (x - 1) for x in num])
+    lower = len(poss_key) * (len(poss_key) - 1)
+    return upper / lower
+    
+def find_key_length(cipher):
+    key_len = 0
+    min_key_len = 1
+    for i in range(2, 24):
+        subkeys = subkey(cipher, i)
+        diff = sum([abs(0.0667 - coincidence(poss_key)) for poss_key in subkeys]) / len(subkeys)
+        if diff < min_key_len:
+            key_len = i
+            min_key_len = diff
+    
+    return key_len
+
+#These are for brute forcing the key once you know the key length
+def monoalpha(m, k):
+    cipher = ""
+    for c in m:
+        cipher += alphabet[(c + k) % 27]
+    return cipher
+
+def chi_square(cipher, e):
+    return sum([((cipher[i] - e[i])**2)/e[i] for i in range(len(cipher))])
+
+#This will attempt to invert the ciphertext based on the guessed key
+def attempt_invert_cipher2(cipher, k):
+    cipher_lst = list(cipher)
+    for i in range(len(cipher)):
+        cipher_lst[i] = alphabet[(alphabet_map[cipher[i]] + k[i % len(k)]) % 27]
+    return "".join(cipher_lst)
+
+#This will attempt to guess the values of the key once the key length is known
+def break_down(cipher, t, eng_let_freq):
+    attempt = subkey(cipher, t)
+    key = []
+    for i in range(len(attempt)):
+        min_i = 0
+        shift_min = 10000000
+        for j in range(26):
+            shift = monoalpha(attempt[i], j)
+            curr = chi_square(build_distribution(shift), eng_let_freq)
+            if curr < shift_min:
+                shift_min = curr
+                min_i = j
+        key.append(min_i)
+    return key
+
+
+
+def decrypt_task2():
+
+
 def main():
 
     dictionary_1 = {
 
-        0: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
-        1: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
-        2: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
-        3: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
-        4: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
+        0: 'error',
+        1: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
+        2: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
+        3: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
+        4: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
+        5: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
     }
 
     dictionary_2 = {
@@ -160,6 +226,23 @@ def main():
 
     cipher = input('Enter the ciphertext: ')
     print('Original plaintext is: ')
-    print(decrypt(cipher, dictionary_1))
+    checker = decrypt(cipher, dictionary_1)
+    if checker == "error":
+        print("Do task 2")
+        task2_plaintext = ""
+        while len(task2_plaintext) <= 500:
+            new_word = random.choice(dictionary_2)
+            if len(new_word) + len(task2_plaintext) >= 500:
+                if len(task2_plaintext) < 500:
+                    task2_plaintext += ' '
+                break
+            else:
+                task2_plaintext += new_word + ' '
+        print("Task 2 plaintext: ", task2_plaintext, len(task2_plaintext))
+        test_cipher = encrypt(message, key, shift)
+        print('cipher is: ')
+        print(test_cipher)
+    else:
+        print(checker)
 
 main()

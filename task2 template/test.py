@@ -138,7 +138,7 @@ def getNthSubkeysLetters(nth, keyLength, message):
     return ''.join(letters)
 
 def loadDictionary():
-    dictionaryFile = open('dictionary.txt')
+    dictionaryFile = open('dictionary_2.txt')
     englishWords = {}
     for word in dictionaryFile.read().split('\n'):
         englishWords[word] = None
@@ -388,7 +388,7 @@ def hackVigenere(ciphertext):
 def main():
     # Instead of typing this ciphertext out, you can copy & paste it
     # from https://www.nostarch.com/crackingcodes/.
-    ciphertext = """Adiz Avtzqeci Tmzubb wsa m Pmilqev halpqavtakuoi lgouqdaf kdmktsvmztsl izr xoexghzr kkusitaaf Vz wsa twbhdg ubalmmzhdad qz hce vmhsgohuqbo ox kaakulmd gxiwvos krgdurdny i rcmmstugvtawz ca tzm ocicwxfg jf stscmilpy oid uwydptsbuci wabt hce Lcdwig eiovdnw Bgfdny qe kddwtk qjnkqpsmev ba pz tzm roohwz at xoexghzr kkusicw izr vrlqrwxist uboedtuuznum Pimifo Icmlv Emf DI Lcdwig owdyzd xwd hce Ywhsmnemzh Xovm mby Cqxtsm Supacg GUKE oo Bdmfqclwg Bomk Tzuhvifa ocyetzqofifo ositjm Rcm a lqys ce oie vzav wr Vpt  lpq gzclqab mekxabnittq tjr Ymdavn fihog cjgbhvnstkgds Zm psqikmp o iuejqf jf lmoviiicqg aoj jdsvkavs Uzreiz qdpzmdg dnutgrdny bts helpar jf lpq pjmtm mb zlwkffjmwktoiiuix avczqzs ohsb ocplv nuby swbfwigk naf ohw Mzwbms umqcifm Mtoej bts raj pq kjrcmp oo tzm Zooigvmz Khqauqvl Dincmalwdm rhwzq vz cjmmhzd gvq ca tzm rwmsl lqgdgfa rcm a kbafzd-hzaumae kaakulmd hce SKQ Wi Tmzubb jgqzsy Msf Zsrmsve Qjmhcfwig Dincmalwdm vt Eizqcekbqf Pnadqfnilg ivzrw pq onsaafsy if bts yenmxckmwvf ca tzm Yoiczmehzr uwydptwze oid tmoohe avfsmekbqr dn eifvzmsbuqvl tqazjgq Pq kmolm m dvpwz ab ohw ktshiuix pvsaa at hojxtcbefmewn afl bfzdakfsy okkuzgalqzu xhwuuqvl jmmqoigve gpcz ie hce Tmxcpsgd-Lvvbgbubnkq zqoxtawz kciup isme xqdgo otaqfqev qz hce k Bgfdnya tchokmjivlabk fzsmtfsy if i ofdmavmz krgaqqptawz wi  wzmz vjmgaqlpad iohn wwzq goidt uzgeyix wi tzm Gbdtwl Wwigvwy Vz aukqdoev bdsvtemzh rilp rshadm tcmmgvqg xhwuuqvl uiehmalqab vs sv mzoejvmhdvw ba dmikwz Hpravs rdev qz  xpsl whsm tow iszkk jqtjrw pug id tqdhcdsg rfjm ugmbddw xawnofqzu Vn avcizsl lqhzreqzsy tzif vds vmmhc wsa eidcalq; vds ewfvzr svp gjmw wfvzrk jqzdenmp vds vmmhc wsa mqxivmzhvl Gv  Esktwunsm  fgtxcrifo mb Dnlmdbzt uiydviyv Nfdtaat Dmiem Ywiikbqf Bojlab Wrgez avdw iz cafakuog pmjxwx ahwxcby gv nscadn at ohw Jdwoikp scqejvysit xwd hce sxboglavs kvy zm ion tjmmhzd Sa at Haq  i bfdvsbq azmtmdg widt ion bwnafz tzm Tcpsw wr Zjrva ivdcz eaigd yzmbo Tmzubb a kbmhptgzk dvrvwz wa efiohzd"""
+    ciphertext = """lacrosses protectional blistered leaseback assurers frizzlers submerse rankness moonset farcer brickyard stolonic trimmings glottic rotates twirlier stuffer publishable invalided harshens tortoni unlikely alefs gladding favouring particulate baldpates changeover lingua proctological freaking outflanked amulets imagist hyped pilfers overachiever clarence outdates smeltery proctological freaking outflanked amulets imagist hyped pilfers overachiever clarence outdates smeltery proctological freaking"""
     hackedMessage = hackVigenere(ciphertext)
 
     if hackedMessage != None:
