@@ -37,7 +37,9 @@ def encrypt(message, key):
     L = 500
     cipertext = ''
 
-    prob_of_random_ciphertext = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
+    probabilities = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
+
+    prob_of_random_ciphertext = random.choice(probabilities)
 
 
     while ciphr_ptr > L + num_rand_characters:
