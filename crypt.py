@@ -92,9 +92,11 @@ def decrypt_helper(plaintext_guess, ciphertext):
 ################################ TASK 2 FUNCTIONS #######################################
 
 def subkey(cipher, t):
-    subkeys = ["" for poss_t in range(t)]
+    subkeys = ["" for i in range(t)]
+
     for i in range(len(cipher)):
         subkeys[i % t] += cipher[i]
+
     return subkeys
 
 #Using Index of Coincidence approach
@@ -119,8 +121,9 @@ def find_key_length(cipher):
 #These are for brute forcing the key once you know the key length
 def monoalpha(m, k):
     cipher = ""
+
     for c in m:
-        cipher += alphabet[(c + k) % 27]
+        cipher += list(alphabet.keys())[(alphabet[c] + k) % 27]
     return cipher
 
 def chi_square(cipher, e):
@@ -130,7 +133,7 @@ def chi_square(cipher, e):
 def attempt_invert_cipher2(cipher, k):
     cipher_lst = list(cipher)
     for i in range(len(cipher)):
-        cipher_lst[i] = alphabet[(alphabet_map[cipher[i]] + k[i % len(k)]) % 27]
+        cipher_lst[i] = list(alphabet.keys())[(alphabet[cipher[i]] + k[i % len(k)]) % 27]
     return "".join(cipher_lst)
 
 #This will attempt to guess the values of the key once the key length is known
@@ -151,8 +154,45 @@ def break_down(cipher, t, eng_let_freq):
 
 
 
-def decrypt_task2():
-    print("s")
+def decrypt_task2(dictionary_2):
+    ### TASK 2 ###
+    task2_plaintext = ""
+    while len(task2_plaintext) <= 500:
+        new_word = random.choice(dictionary_2)
+        if len(new_word) + len(task2_plaintext) >= 500:
+            if len(task2_plaintext) < 500:
+                task2_plaintext += ' '
+            break
+        else:
+            task2_plaintext += new_word + ' '
+    print("Task 2 plaintext: ", task2_plaintext, len(task2_plaintext))
+
+    #Generating ciphertext from plaintext
+    t2 = random.randint(1, 24)
+    k2 = [random.randint(0,26) for i in range(t2)]
+    print("cipher for task 2: ", encrypt(task2_plaintext, k2, t2))
+    
+    c2 = input("Enter ciphertext for task 2: ")
+    # print("key len: ", k2, len(k2))
+    # print("key len guess: ", find_key_length(c2))
+
+    #Taken from: http://www.macfreek.nl/memory/Letter_Distribution
+    eng_let_freq_dict = {   ' ': 0.1831686, 'a': 0.0655307, 'b': 0.0127070, 'c': 0.0226508, 'd': 0.0335227, 'e': 0.1021788,
+                            'f': 0.0197180, 'g': 0.0163587, 'h': 0.0486220, 'i': 0.0573425, 'j': 0.0011440, 'k': 0.0056916,
+                            'l': 0.0335616, 'm': 0.0201727, 'n': 0.0570308, 'o': 0.0620055, 'p': 0.0150311, 'q': 0.0008809,
+                            'r' :0.0497199, 's': 0.0532626, 't': 0.0750999, 'u': 0.0229520, 'v': 0.0078804, 'w': 0.0168961,
+                            'x': 0.0014980, 'y': 0.0146995, 'z': 0.0005979
+                        }
+    
+    eng_let_freq = [0.1831686, 0.0655307, 0.0127070, 0.0226508, 0.0335227, 0.1021788, 0.0197180, 0.0163587, 0.0486220, 
+                    0.0573425, 0.0011440, 0.0056916, 0.0335616, 0.0201727, 0.0570308, 0.0620055, 0.0150311, 0.0008809,
+                    0.0497199, 0.0532626, 0.0750999, 0.0229520, 0.0078804, 0.0168961, 0.0014980, 0.0146995, 0.0005979
+                ]
+
+    test = break_down(c2, find_key_length(c2), list(eng_let_freq_dict.values()))
+    p2 = attempt_invert_cipher2(c2, test)
+    print("The original plaintext is most likely: ")
+    print(p2)
 
 def main():
 
@@ -228,20 +268,7 @@ def main():
     print('Original plaintext is: ')
     checker = decrypt(cipher, dictionary_1)
     if checker == "error":
-        print("Do task 2")
-        task2_plaintext = ""
-        while len(task2_plaintext) <= 500:
-            new_word = random.choice(dictionary_2)
-            if len(new_word) + len(task2_plaintext) >= 500:
-                if len(task2_plaintext) < 500:
-                    task2_plaintext += ' '
-                break
-            else:
-                task2_plaintext += new_word + ' '
-        print("Task 2 plaintext: ", task2_plaintext, len(task2_plaintext))
-        test_cipher = encrypt(message, key, shift)
-        print('cipher is: ')
-        print(test_cipher)
+        decrypt_task2(dictionary_2)
     else:
         print(checker)
 
