@@ -1,4 +1,5 @@
 import random
+import math
 
 # a dictionary containing all characters used in encryption/decryption with its associated value
 alphabet = {
@@ -21,23 +22,59 @@ def build_distribution(ciphertext):
 
     return distribution
 
-def encrypt(message, key, shift):
+def generate_keys(dictionary_1):
+    keys = []
+    for key in range(len(dictionary_1) - 1):
+        keys.append(random.sample(alphabet, len(alphabet)))
+    print(keys)
+    return keys
+
+def encrypt(message, key):
+
+    ciphr_ptr = 1 
+    msg_ptr = 1
+    num_rand_characters = 0
+    L = 500
+    cipertext = ''
+
+    prob_of_random_ciphertext = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
+
+
+    while ciphr_ptr > L + num_rand_characters:
+        # coin_generation_algorithm(ciphertext_pointer,L)
+        coin_value = random.uniform(0,1)
+
+        if prob_of_random_ciphertext < coin_value and coin_value <= 1:
+            j = message[msg_ptr]
+            ciphertext[ciphr_ptr] = key[j]
+            msg_ptr += 1
+
+        if 0 <= coin_value and coin_value <= prob_of_random_ciphertext:
+
+            random_char = random.choice(list(alphabet.keys()))
+            ciphertext[ciphr_ptr] = random_char
+            num_rand_characters += 1
+
+        ciphr_ptr += 1
+
+
+# def encrypt(message, key, shift):
     
-    ciphertext = ''
+#     ciphertext = ''
 
-    # loop over the message, convert each letter to its ascii code + 1 to offset space character
-    # return the associated ciphertext
-    for char in range(len(message)):
+#     # loop over the message, convert each letter to its ascii code + 1 to offset space character
+#     # return the associated ciphertext
+#     for char in range(len(message)):
 
-        if message[char] == ' ':
-            letter = 0
+#         if message[char] == ' ':
+#             letter = 0
         
-        else:
-            letter = ord(message[char]) - ord('a') + 1
+#         else:
+#             letter = ord(message[char]) - ord('a') + 1
 
-        ciphertext += list(alphabet.keys())[list(alphabet.values()).index((letter + key[(char + 1) % shift]) % 27)]
+#         ciphertext += list(alphabet.keys())[list(alphabet.values()).index((letter + key[(char + 1) % shift]) % len(alphabet))]
 
-    return ciphertext
+#     return ciphertext
 
 def decrypt(ciphertext, plaintext_dict):
 
@@ -59,31 +96,31 @@ def decrypt(ciphertext, plaintext_dict):
 def decrypt_helper(plaintext_guess, ciphertext):
     
     success = 0
-    key_len = 1
+    key_length = 1
     shift_length = 24
     
     # verify key length
 
-    while key_len < shift_length:
+    while key_length < shift_length:
         
         correct = 0
         
         # loop over each character in key append to cipher string and possible_plaintext string
-        for letter_index in range(0, key_len):
+        for letter_index in range(0, key_length):
             
             cipher = ''
             possible_plaintext = ''
 
-            cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_len)])
+            cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
 
-            possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_len)])
+            possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
 
             # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
             # must sort distributions of letters so that they can be mapped by frequency
             if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
                 correct += 1
 
-        key_len += 1
+        key_length += 1
 
         success = max(success, correct)
 
@@ -91,108 +128,190 @@ def decrypt_helper(plaintext_guess, ciphertext):
 
 ################################ TASK 2 FUNCTIONS #######################################
 
-def subkey(cipher, t):
-    subkeys = ["" for i in range(t)]
+def generate_subkeys(cipher, shift_length):
+
+    # function to generate subkeys
+    # first loop for the shift length and build list of empty strings
+    # then loop over the ciphertext and add combinations of substrings while maintaining the shift length
+
+    subkeys = []
+    i = 0
+
+    while i < shift_length:
+
+        subkeys.append('')
+        i += 1
 
     for i in range(len(cipher)):
-        subkeys[i % t] += cipher[i]
+
+        subkeys[i % shift_length] += cipher[i]
 
     return subkeys
 
 #Using Index of Coincidence approach
-def coincidence(poss_key):
-    num = build_distribution(poss_key)
-    upper = sum([x * (x - 1) for x in num])
-    lower = len(poss_key) * (len(poss_key) - 1)
-    return upper / lower
+def incidence_of_coinkidinks(key_guess):
+
+    # use the index of coincidence approach in order to determine the amount of identical letters appearing in the same index.
+
+    # first, construct the distribution
+    # loop through the frequencies and determine an upperbound and lowerbound
+    # return the result by dividing them
+
+    distribution = build_distribution(key_guess)
     
-def find_key_length(cipher):
-    key_len = 0
-    min_key_len = 1
-    for i in range(2, 24):
-        subkeys = subkey(cipher, i)
-        diff = sum([abs(0.0667 - coincidence(poss_key)) for poss_key in subkeys]) / len(subkeys)
-        if diff < min_key_len:
-            key_len = i
-            min_key_len = diff
+    upperbound = 0
+
+    for freq in distribution:
+        upperbound += freq * freq - 1
+
+    key_length = len(key_guess)
+
+    lowerbound = key_length * (key_length - 1)
+
+    result = upperbound / lowerbound
     
-    return key_len
+    return result
+    
+def determine_key_length(ciphertext):
+
+    # function to determine the key length
+
+    key_length = 0
+    minimum_length = 1
+    max_length = 24
+    coincidence = 2 / 30 # found through frequency analysis
+
+    # loop through the possible key lengths and generate subkeys from ciphertext
+    # determine the difference using the incidence of coincidence
+
+    for i in range(2, max_length):
+        
+        subkeys = generate_subkeys(ciphertext, i)
+
+        list_of_differences = []
+
+        for key_guess in subkeys:
+
+            list_of_differences.append(abs(coincidence - incidence_of_coinkidinks(key_guess)))
+
+        difference = sum(list_of_differences) / len(subkeys)
+        
+        # if the difference is less than the minimum key length, then set the key length, and minimum key length and continue
+        if difference < minimum_length:
+            
+            key_length = i
+            minimum_length = difference
+    
+    return key_length
+
+# def loop_through():
 
 #These are for brute forcing the key once you know the key length
-def monoalpha(m, k):
-    cipher = ""
+def bruteforce(message, key):
 
-    for c in m:
-        cipher += list(alphabet.keys())[(alphabet[c] + k) % 27]
-    return cipher
+    # once the key length is known, we are able to brute force the key
 
-def chi_square(cipher, e):
-    return sum([((cipher[i] - e[i])**2)/e[i] for i in range(len(cipher))])
+    ciphertext = ""
+
+    # for each character in the message build ciphertext by applying shift
+    for char in message:
+        ciphertext += list(alphabet.keys())[(alphabet[char] + key) % len(alphabet)]
+
+    return ciphertext
+
+def chi_square_distribution(cipher, e):
+
+    return sum([pow((cipher[i] - e[i]), 2) / e[i] for i in range(len(cipher))])
 
 #This will attempt to invert the ciphertext based on the guessed key
-def attempt_invert_cipher2(cipher, k):
-    cipher_lst = list(cipher)
-    for i in range(len(cipher)):
-        cipher_lst[i] = list(alphabet.keys())[(alphabet[cipher[i]] + k[i % len(k)]) % 27]
-    return "".join(cipher_lst)
+def invert_cipher(ciphertext, key):
+
+    print('\nCIPHERTEXT: ',ciphertext, '\n')
+
+    ciphers = list(ciphertext)
+
+    print('\nCIPHERS: ',ciphers, '\n')
+
+    ciphers = ''
+
+    for i in range(len(ciphertext)):
+
+        ciphers.append(list(alphabet.keys())[(alphabet[ciphertext[i]] + key[i % len(key)]) % len(alphabet)])
+
+    return "".join(ciphers)
 
 #This will attempt to guess the values of the key once the key length is known
-def break_down(cipher, t, eng_let_freq):
-    attempt = subkey(cipher, t)
+def guess_key(cipher, shift, frequency):
+
+    attempt = generate_subkeys(cipher, shift)
     key = []
+    key_length = 26
+    
     for i in range(len(attempt)):
+        
         min_i = 0
         shift_min = 10000000
-        for j in range(26):
-            shift = monoalpha(attempt[i], j)
-            curr = chi_square(build_distribution(shift), eng_let_freq)
+        
+        for j in range(key_length):
+            
+            shift = bruteforce(attempt[i], j)
+            curr = chi_square_distribution(build_distribution(shift), frequency)
+            
             if curr < shift_min:
                 shift_min = curr
                 min_i = j
+
         key.append(min_i)
+
     return key
 
 
 
 def decrypt_task2(dictionary_2):
-    ### TASK 2 ###
-    task2_plaintext = ""
-    while len(task2_plaintext) <= 500:
-        new_word = random.choice(dictionary_2)
-        if len(new_word) + len(task2_plaintext) >= 500:
-            if len(task2_plaintext) < 500:
-                task2_plaintext += ' '
-            break
-        else:
-            task2_plaintext += new_word + ' '
-    print("Task 2 plaintext: ", task2_plaintext, len(task2_plaintext))
+
+    plaintext = ""
+
+    max_length = 500
+    condition_met = 501
+
+    count = 0
+    
+    while count <= max_length:
+
+        word = random.choice(dictionary_2)
+
+        if count + len(word) + len(' ') <= max_length:
+
+            plaintext += word + ' '
+            count += len(word) + len(' ')
+
+        elif count or count + len(word) or count + len(word) + len(' ') > max_length:
+            count = condition_met
+
+
+    print("Task 2 plaintext: ", plaintext, len(plaintext))
 
     #Generating ciphertext from plaintext
-    t2 = random.randint(1, 24)
-    k2 = [random.randint(0,26) for i in range(t2)]
-    print("cipher for task 2: ", encrypt(task2_plaintext, k2, t2))
+    shift = random.choice(range(1, 24))
+    key = [random.choice(range(0 ,26)) for i in range(shift)]
+    print("cipher for task 2: ", encrypt(plaintext, key, shift))
     
-    c2 = input("Enter ciphertext for task 2: ")
+    ciphertext = input("Enter ciphertext for task 2: ")
     # print("key len: ", k2, len(k2))
-    # print("key len guess: ", find_key_length(c2))
+    # print("key len guess: ", determine_key_len(c2))
 
     #Taken from: http://www.macfreek.nl/memory/Letter_Distribution
-    eng_let_freq_dict = {   ' ': 0.1831686, 'a': 0.0655307, 'b': 0.0127070, 'c': 0.0226508, 'd': 0.0335227, 'e': 0.1021788,
+    frequency_of_letters = {   ' ': 0.1831686, 'a': 0.0655307, 'b': 0.0127070, 'c': 0.0226508, 'd': 0.0335227, 'e': 0.1021788,
                             'f': 0.0197180, 'g': 0.0163587, 'h': 0.0486220, 'i': 0.0573425, 'j': 0.0011440, 'k': 0.0056916,
                             'l': 0.0335616, 'm': 0.0201727, 'n': 0.0570308, 'o': 0.0620055, 'p': 0.0150311, 'q': 0.0008809,
                             'r' :0.0497199, 's': 0.0532626, 't': 0.0750999, 'u': 0.0229520, 'v': 0.0078804, 'w': 0.0168961,
                             'x': 0.0014980, 'y': 0.0146995, 'z': 0.0005979
                         }
-    
-    eng_let_freq = [0.1831686, 0.0655307, 0.0127070, 0.0226508, 0.0335227, 0.1021788, 0.0197180, 0.0163587, 0.0486220, 
-                    0.0573425, 0.0011440, 0.0056916, 0.0335616, 0.0201727, 0.0570308, 0.0620055, 0.0150311, 0.0008809,
-                    0.0497199, 0.0532626, 0.0750999, 0.0229520, 0.0078804, 0.0168961, 0.0014980, 0.0146995, 0.0005979
-                ]
 
-    test = break_down(c2, find_key_length(c2), list(eng_let_freq_dict.values()))
-    p2 = attempt_invert_cipher2(c2, test)
+    test = guess_key(ciphertext, determine_key_length(ciphertext), list(frequency_of_letters.values()))
+    plaintext_guess = invert_cipher(ciphertext, test)
     print("The original plaintext is most likely: ")
-    print(p2)
+    print(plaintext_guess)
 
 def main():
 
@@ -250,6 +369,13 @@ def main():
         39: 'smeltery'
     }
 
+
+    key = generate_keys(dictionary_1)
+
+    test = encrypt(dictionary_1[plaintext_sample], key)
+
+    print(test)
+
     # select plaintext randomly
     shift = random.choice(range(1 ,24))
     plaintext_sample = random.choice(range(0, 4))
@@ -264,12 +390,13 @@ def main():
     # print('cipher is: ')
     # print(test_cipher)
 
-    cipher = input('Enter the ciphertext: ')
-    print('Original plaintext is: ')
-    checker = decrypt(cipher, dictionary_1)
-    if checker == "error":
-        decrypt_task2(dictionary_2)
-    else:
-        print(checker)
+    # cipher = input('Enter the ciphertext: ')
+    # print('Original plaintext is: ')
+    # checker = decrypt(cipher, dictionary_1)
+    
+    # if checker == "error":
+    #     decrypt_task2(dictionary_2)
+    # else:
+    #     print(checker)
 
 main()
