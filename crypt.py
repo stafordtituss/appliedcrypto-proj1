@@ -11,6 +11,16 @@ alphabet = {
     'y': 25, 'z': 26
 }
 
+dictionary_1 = {
+
+    0: 'error',
+    1: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
+    2: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
+    3: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
+    4: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
+    5: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
+}
+
 def build_distribution(ciphertext):
     
     # initiliazed distribution
@@ -25,39 +35,59 @@ def build_distribution(ciphertext):
 def generate_keys(dictionary_1):
     keys = []
     for key in range(len(dictionary_1) - 1):
-        keys.append(random.sample(alphabet, len(alphabet)))
+        keys.append(random.sample(alphabet.keys(), len(alphabet)))
     print(keys)
     return keys
+
+def find_char(c, i, keys):
+    print(keys[i])
+    if c == ' ':
+        letter = 0
+    else:
+        letter = ord(c) - ord('a') + 1
+    final = keys[i][letter]
+    return final
+
+
 
 def encrypt(message, key):
 
     ciphr_ptr = 1 
-    msg_ptr = 1
+    msg_ptr = 0
     num_rand_characters = 0
     L = 500
-    cipertext = ''
+    ciphertext = []
+    final = []
 
     probabilities = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
 
-    prob_of_random_ciphertext = random.choice(probabilities)
+    for i in range(len(dictionary_1) - 1):
 
+        prob_of_random_ciphertext = random.choice(probabilities)
+        coin_value = random.random()
+        while msg_ptr < len(message):
+            # while len(ciphertext) <= len(message) + num_rand_characters:
+            # coin_generation_algorithm(ciphertext_pointer,L)
 
-    while ciphr_ptr > L + num_rand_characters:
-        # coin_generation_algorithm(ciphertext_pointer,L)
-        coin_value = random.uniform(0,1)
+            if prob_of_random_ciphertext < coin_value <= 1:
+                print(msg_ptr)
+                j = message[msg_ptr]
+                print(j)
+                char = find_char(j, i, key)
+                ciphertext.append(char)
+                print(ciphertext)
+                msg_ptr += 1
 
-        if prob_of_random_ciphertext < coin_value and coin_value <= 1:
-            j = message[msg_ptr]
-            ciphertext[ciphr_ptr] = key[j]
-            msg_ptr += 1
+            if 0 <= coin_value <= prob_of_random_ciphertext:
 
-        if 0 <= coin_value and coin_value <= prob_of_random_ciphertext:
+                random_char = random.choice(list(alphabet.keys()))
+                ciphertext.append(random_char)
+                num_rand_characters += 1
 
-            random_char = random.choice(list(alphabet.keys()))
-            ciphertext[ciphr_ptr] = random_char
-            num_rand_characters += 1
-
-        ciphr_ptr += 1
+                # ciphr_ptr += 1
+        final.append(''.join(ciphertext))
+        prob_of_random_ciphertext = 1
+    return final
 
 
 # def encrypt(message, key, shift):
@@ -317,16 +347,6 @@ def decrypt_task2(dictionary_2):
 
 def main():
 
-    dictionary_1 = {
-
-        0: 'error',
-        1: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
-        2: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
-        3: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
-        4: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
-        5: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
-    }
-
     dictionary_2 = {
 
         0: 'lacrosses',
@@ -373,17 +393,21 @@ def main():
 
 
     key = generate_keys(dictionary_1)
+    dict_1 = list(dictionary_1.values())
+    print(dict_1)
+    plaintext_sample = random.choice(range(1,4))
 
-    test = encrypt(dictionary_1[plaintext_sample], key)
+    test = encrypt(dict_1[plaintext_sample], key)
 
-    print(test)
+    # print("Final CipherText: \n" + str(''.join(test)))
+    print("Final: " + str(test))
 
     # select plaintext randomly
-    shift = random.choice(range(1 ,24))
-    plaintext_sample = random.choice(range(0, 4))
-    message = dictionary_1[plaintext_sample]
+    # shift = random.choice(range(1 ,24))
+    
+    # message = dictionary_1[plaintext_sample]
 
-    key = [random.choice(range(0 ,26)) for i in range(shift)]
+    # key = [random.choice(range(0 ,26)) for i in range(shift)]
 
     # print('plaintext is: ', message)
     
