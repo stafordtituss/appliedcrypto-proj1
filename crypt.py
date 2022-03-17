@@ -62,12 +62,13 @@ def encrypt(message, key):
     probabilities = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
 
     for i in range(len(dictionary_1) - 1):
+        print(i)
 
         prob_of_random_ciphertext = random.choice(probabilities)
-        coin_value = random.random()
         while msg_ptr < len(message):
             # while len(ciphertext) <= len(message) + num_rand_characters:
             # coin_generation_algorithm(ciphertext_pointer,L)
+            coin_value = random.uniform(0, 1)
 
             if prob_of_random_ciphertext < coin_value <= 1:
                 print(msg_ptr)
@@ -86,7 +87,9 @@ def encrypt(message, key):
 
                 # ciphr_ptr += 1
         final.append(''.join(ciphertext))
-        prob_of_random_ciphertext = 1
+        msg_ptr = 0
+        ciphertext = []
+        # prob_of_random_ciphertext = 1
     return final
 
 
@@ -400,7 +403,7 @@ def main():
     test = encrypt(dict_1[plaintext_sample], key)
 
     # print("Final CipherText: \n" + str(''.join(test)))
-    print("Final: " + str(test))
+    print("\nFinal: \n" + str(test))
 
     # select plaintext randomly
     # shift = random.choice(range(1 ,24))
