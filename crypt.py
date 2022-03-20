@@ -1,5 +1,6 @@
 import random
 import math
+from collections import Counter
 
 # a dictionary containing all characters used in encryption/decryption with its associated value
 alphabet = {
@@ -13,12 +14,12 @@ alphabet = {
 
 dictionary_1 = {
 
-    0: 'error',
-    1: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
-    2: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
-    3: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
-    4: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
-    5: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
+    # 0: 'error',
+    0: 'underwaists wayfarings fluty analgia refuels transcribing nibbled okra buttonholer venalness hamlet praus apprisers presifted cubital walloper dissembler bunting wizardries squirrel preselect befitted licensee encumbrances proliferations tinkerer egrets recourse churl kolinskies ionospheric docents unnatural scuffler muches petulant acorns subconscious xyster tunelessly boners slag amazement intercapillary manse unsay embezzle stuccoer dissembles batwing valediction iceboxes ketchups phonily con',
+    1: 'rhomb subrents brasiers render avg tote lesbian dibbers jeopardy struggling urogram furrowed hydrargyrum advertizing cheroots goons congratulation assaulters ictuses indurates wingovers relishes briskly livelihoods inflatable serialized lockboxes cowers holster conciliating parentage yowing restores conformities marted barrettes graphically overdevelop sublimely chokey chinches abstracts rights hockshops bourgeoisie coalition translucent fiascoes panzer mucus capacitated stereotyper omahas produ',
+    2: 'yorkers peccaries agenda beshrews outboxing biding herons liturgies nonconciliatory elliptical confidants concealable teacups chairmanning proems ecclesiastically shafting nonpossessively doughboy inclusion linden zebroid parabolic misadventures fanciers grovelers requiters catmints hyped necklace rootstock rigorously indissolubility universally burrowers underproduced disillusionment wrestling yellowbellied sherpa unburnt jewelry grange dicker overheats daphnia arteriosclerotic landsat jongleur',
+    3: 'cygnets chatterers pauline passive expounders cordwains caravel antidisestablishmentarianism syllabubs purled hangdogs clonic murmurers admirable subdialects lockjaws unpatentable jagging negotiated impersonates mammons chumminess semi pinner comprised managership conus turned netherlands temporariness languishers aerate sadists chemistry migraine froggiest sounding rapidly shelving maligning shriek faeries misogynist clarities oversight doylies remodeler tauruses prostrated frugging comestible ',
+    4: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
 }
 
 def build_distribution(ciphertext):
@@ -26,140 +27,192 @@ def build_distribution(ciphertext):
     # initiliazed distribution
     distribution = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
+    # python sorts space character before 'a' so keep that in mind
     for char in ciphertext:
 
         distribution[alphabet[char]] += 1
 
     return distribution
 
-def generate_keys(dictionary_1):
-    keys = []
-    for key in range(len(dictionary_1) - 1):
-        keys.append(random.sample(alphabet.keys(), len(alphabet)))
-    print(keys)
-    return keys
+def generate_key(plaintext):
+    
+    key = []
 
-def find_char(c, i, keys):
-    print(keys[i])
+    for char in plaintext:
+        key = random.sample(list(alphabet.keys()), len(alphabet))
+
+    return key
+
+def find_char(c, key):
+
     if c == ' ':
         letter = 0
     else:
         letter = ord(c) - ord('a') + 1
-    final = keys[i][letter]
+
+    final = key[letter]
+    
     return final
 
 
 
 def encrypt(message, key):
 
-    ciphr_ptr = 1 
+    ciphr_ptr = 0 
     msg_ptr = 0
     num_rand_characters = 0
     L = 500
     ciphertext = []
-    final = []
 
     probabilities = [0, 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]
 
-    for i in range(len(dictionary_1) - 1):
-        print(i)
+    prob_of_random_ciphertext = random.choice(probabilities)
 
-        prob_of_random_ciphertext = random.choice(probabilities)
-        while msg_ptr < len(message):
-            # while len(ciphertext) <= len(message) + num_rand_characters:
-            # coin_generation_algorithm(ciphertext_pointer,L)
-            coin_value = random.uniform(0, 1)
-
-            if prob_of_random_ciphertext < coin_value <= 1:
-                print(msg_ptr)
-                j = message[msg_ptr]
-                print(j)
-                char = find_char(j, i, key)
-                ciphertext.append(char)
-                print(ciphertext)
-                msg_ptr += 1
-
-            if 0 <= coin_value <= prob_of_random_ciphertext:
-
-                random_char = random.choice(list(alphabet.keys()))
-                ciphertext.append(random_char)
-                num_rand_characters += 1
-
-                # ciphr_ptr += 1
-        final.append(''.join(ciphertext))
-        msg_ptr = 0
-        ciphertext = []
-        # prob_of_random_ciphertext = 1
-    return final
+    # print('KEY: ', key)
 
 
-# def encrypt(message, key, shift):
-    
-#     ciphertext = ''
+    while ciphr_ptr < L + num_rand_characters:
+        # coin_generation_algorithm(ciphertext_pointer,L)
+        coin_value = random.uniform(0,1)
 
-#     # loop over the message, convert each letter to its ascii code + 1 to offset space character
-#     # return the associated ciphertext
-#     for char in range(len(message)):
+        if prob_of_random_ciphertext < coin_value and coin_value <= 1:
+            j = message[msg_ptr]
+            char = find_char(j, key)
 
-#         if message[char] == ' ':
-#             letter = 0
-        
-#         else:
-#             letter = ord(message[char]) - ord('a') + 1
+            ciphertext.append(char)
+            msg_ptr += 1
 
-#         ciphertext += list(alphabet.keys())[list(alphabet.values()).index((letter + key[(char + 1) % shift]) % len(alphabet))]
+        if 0 <= coin_value and coin_value <= prob_of_random_ciphertext:
+            random_char = random.choice(list(alphabet.keys()))
+            ciphertext.append(random_char)
+            num_rand_characters += 1
 
-#     return ciphertext
+        ciphr_ptr += 1
 
-def decrypt(ciphertext, plaintext_dict):
+    # print('plaintext: ', message, 'Length: ', len(message))
 
-    success = 0
-    correct_index = 0
+    # print('\nciphertext: ', ciphertext, 'Length: ', len(ciphertext))
 
-    # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
-    for key, value in plaintext_dict.items():
-        
-        current = decrypt_helper(value, ciphertext)
-        
-        if current > success:
+    return ''.join(ciphertext)
+
+def find_key(input_dict, value):
+
+    return next((k for k, v in input_dict.items() if v == value), None)
+
+def decrypt(ciphertext, plaintext_dictionary):
+
+    dictionary_distribution_mapping = {}
+
+    cipher_count = len(ciphertext)
+    plaintext_count = len(plaintext_dictionary[1])
+
+    for index, plaintext in enumerate(plaintext_dictionary):
+
+        dictionary_distribution_mapping[plaintext_dictionary[index]] = sorted(build_distribution(plaintext))
+
+    ciphertext_distribution = sorted(build_distribution(ciphertext))
+
+    possible_plaintexts = plaintext_dictionary
+
+    if cipher_count == plaintext_count:
+
+        for i in range(len(dictionary_distribution_mapping)):
+
+            if ciphertext_distribution == list(dictionary_distribution_mapping.values())[i]:
+
+                return plaintext_dictionary[i]
+
+    else:
+        # random characters inserted
+
+        max_freq = [max(i) for i in zip(*dictionary_distribution_mapping.values())]
+
+        # print('max freq: ',max_freq)
+
+        for i in range(len(alphabet)):
             
-            correct_index = key
-            success = current
-    
-    return plaintext_dict[correct_index]
+            if ciphertext_distribution[i] > max_freq[i]:
+                cipher_count -= (ciphertext_distribution[i] - max_freq[i])
+                ciphertext_distribution[i] = max_freq[i]  
 
-def decrypt_helper(plaintext_guess, ciphertext):
-    
-    success = 0
-    key_length = 1
-    shift_length = 24
-    
-    # verify key length
+        print(list(dictionary_distribution_mapping.values())[0], '\n',
+            list(dictionary_distribution_mapping.values())[1], '\n',
+            list(dictionary_distribution_mapping.values())[2], '\n',
+            list(dictionary_distribution_mapping.values())[3], '\n',
+            list(dictionary_distribution_mapping.values())[4], '\n')
 
-    while key_length < shift_length:
+        print('new ciphertext count: ', cipher_count, '\n')
+        print('\nciphertext_distribution: ', ciphertext_distribution)
+
+        for plaintext_distribution in dictionary_distribution_mapping.values():
+
+            for i in range(len(alphabet) - 1, -1, -1):
+
+                if ciphertext_distribution[i] < plaintext_distribution[i]:
+                    print(ciphertext_distribution[i], plaintext_distribution[i])
+
+                    y=find_key(dictionary_distribution_mapping, plaintext_distribution)
+
+                    print('ITEM TO DELETE: ', y, '\n')
+
+                    x = possible_plaintexts.remove(find_key(dictionary_distribution_mapping, plaintext_distribution))
+                    break
+
+
+        # determine max letter frequency for each character in the plaintexts, to figure out how many characters i can delete
+
+        # possible_plaintexts might be a string of multiple plaintexts if we are not sure which one it could be
+        return ''.join(possible_plaintexts)
+
+# def decrypt(ciphertext, plaintext):
+
+#     success = 0
+#     correct_index = 0
+
+#     # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
+#     for key, value in enumerate(plaintext):
         
-        correct = 0
+#         current = decrypt_helper(value, ciphertext)
         
-        # loop over each character in key append to cipher string and possible_plaintext string
-        for letter_index in range(0, key_length):
+#         if current > success:
             
-            cipher = ''
-            possible_plaintext = ''
+#             correct_index = key
+#             success = current
+    
+#     return plaintext[correct_index]
 
-            cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
+# def decrypt_helper(plaintext_guess, ciphertext):
+    
+#     success = 0
+#     key_length = 1
+#     shift_length = 24
+    
+#     # verify key length
 
-            possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
+#     while key_length < shift_length:
+        
+#         correct = 0
+        
+#         # loop over each character in key append to cipher string and possible_plaintext string
+#         for letter_index in range(0, key_length):
+            
+#             cipher = ''
+#             possible_plaintext = ''
 
-            # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
-            # must sort distributions of letters so that they can be mapped by frequency
-            if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
-                correct += 1
+#             cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
 
-        key_length += 1
+#             possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
 
-        success = max(success, correct)
+#             # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
+#             # must sort distributions of letters so that they can be mapped by frequency
+#             if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
+#                 correct += 1
 
-    return success
+#         key_length += 1
+
+#         success = max(success, correct)
+
+#     return success
 
 ################################ TASK 2 FUNCTIONS #######################################
 
@@ -394,17 +447,29 @@ def main():
         39: 'smeltery'
     }
 
-
-    key = generate_keys(dictionary_1)
     dict_1 = list(dictionary_1.values())
-    print(dict_1)
-    plaintext_sample = random.choice(range(1,4))
+    # print(dict_1)
+    plaintext_sample = random.choice(range(5))
 
-    test = encrypt(dict_1[plaintext_sample], key)
+    key = generate_key(dict_1[plaintext_sample])
 
-    # print("Final CipherText: \n" + str(''.join(test)))
-    print("\nFinal: \n" + str(test))
+    test_encrypt = encrypt(dict_1[plaintext_sample], key)
 
+    print('original plaintext: ' + dict_1[plaintext_sample] + '\n')
+
+    print('ciphertext: ' + test_encrypt + '\n')
+
+    test_decrypt = decrypt(test_encrypt, dict_1)
+
+    print('plaintext guess is: ', test_decrypt)
+
+    # print("Final CipherText: \n" + str(''.join(test_encrypt)))
+    # print("\nFinal: \n" + str(test_encrypt))
+
+
+    # test_decrypt = decrypt(test_encrypt, dict_1)
+
+    # print("\nplaintext guess is: ", test_decrypt, '\n')
     # select plaintext randomly
     # shift = random.choice(range(1 ,24))
     
