@@ -12,6 +12,8 @@ alphabet = {
     'y': 25, 'z': 26
 }
 
+key_vals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+
 dictionary_1 = {
 
     # 0: 'error',
@@ -39,7 +41,7 @@ def generate_key(plaintext):
     key = []
 
     for char in plaintext:
-        key = random.sample(list(alphabet.keys()), len(alphabet))
+        key = random.sample(key_vals, len(key_vals))
 
     return key
 
@@ -51,10 +53,15 @@ def find_char(c, key):
         letter = ord(c) - ord('a') + 1
 
     final = key[letter]
+
+    if final == 0:
+        char = ' '
+    else:
+        char = list(alphabet.keys())[final]
     
-    return final
-
-
+    last = char
+    
+    return last
 
 def encrypt(message, key):
 
@@ -78,6 +85,7 @@ def encrypt(message, key):
         if prob_of_random_ciphertext < coin_value and coin_value <= 1:
             j = message[msg_ptr]
             char = find_char(j, key)
+            # print(char)
 
             ciphertext.append(char)
             msg_ptr += 1
@@ -99,11 +107,66 @@ def find_key(input_dict, value):
 
     return next((k for k, v in input_dict.items() if v == value), None)
 
+def freq_analyze(ciphertext, plaintext):
+
+    success = 0
+    correct_index = 0
+
+    # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
+    for key, value in enumerate(plaintext):
+        print(key)
+        print(value)
+        current = decrypt_helper(value, ciphertext)
+        print("Current: " + str(current))
+        
+        if current > success:
+            
+            correct_index = key
+            success = current
+    
+    return plaintext[correct_index]
+
+def decrypt_helper(plaintext_guess, ciphertext):
+    
+    success = 0
+    key_length = 1
+    shift_length = 24
+    
+    # verify key length
+
+    while key_length < shift_length:
+        
+        correct = 0
+        
+        # loop over each character in key append to cipher string and possible_plaintext string
+        for letter_index in range(0, key_length):
+            
+            cipher = ''
+            possible_plaintext = ''
+
+            cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
+
+            possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
+
+            # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
+            # must sort distributions of letters so that they can be mapped by frequency
+            if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
+                correct += 1
+
+        key_length += 1
+
+        success = max(success, correct)
+    
+    return success
+
+
+
 def decrypt(ciphertext, plaintext_dictionary):
 
     dictionary_distribution_mapping = {}
 
     cipher_count = len(ciphertext)
+    print("Input Ciphertext Length: " + str(cipher_count))
     plaintext_count = len(plaintext_dictionary[1])
 
     for index, plaintext in enumerate(plaintext_dictionary):
@@ -123,8 +186,7 @@ def decrypt(ciphertext, plaintext_dictionary):
                 return plaintext_dictionary[i]
 
     else:
-        # random characters inserted
-
+        # determine max letter frequency for each character in the plaintexts, to figure out how many characters i can delete
         max_freq = [max(i) for i in zip(*dictionary_distribution_mapping.values())]
 
         # print('max freq: ',max_freq)
@@ -141,7 +203,7 @@ def decrypt(ciphertext, plaintext_dictionary):
             list(dictionary_distribution_mapping.values())[3], '\n',
             list(dictionary_distribution_mapping.values())[4], '\n')
 
-        print('new ciphertext count: ', cipher_count, '\n')
+        print('Updated ciphertext count: ', cipher_count, '\n')
         print('\nciphertext_distribution: ', ciphertext_distribution)
 
         for plaintext_distribution in dictionary_distribution_mapping.values():
@@ -158,61 +220,19 @@ def decrypt(ciphertext, plaintext_dictionary):
                     x = possible_plaintexts.remove(find_key(dictionary_distribution_mapping, plaintext_distribution))
                     break
 
-
-        # determine max letter frequency for each character in the plaintexts, to figure out how many characters i can delete
-
         # possible_plaintexts might be a string of multiple plaintexts if we are not sure which one it could be
-        return ''.join(possible_plaintexts)
+        if len(possible_plaintexts) == 1:
+            print("STEP 1")
+            return ''.join(possible_plaintexts)
+        elif len(possible_plaintexts) == 0:
+            error_code = "Unable to find Plaintext!"
+            return error_code
+        else:
+            print("STEP 2")
+            out = freq_analyze(ciphertext, possible_plaintexts)
+            return out
 
-# def decrypt(ciphertext, plaintext):
 
-#     success = 0
-#     correct_index = 0
-
-#     # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
-#     for key, value in enumerate(plaintext):
-        
-#         current = decrypt_helper(value, ciphertext)
-        
-#         if current > success:
-            
-#             correct_index = key
-#             success = current
-    
-#     return plaintext[correct_index]
-
-# def decrypt_helper(plaintext_guess, ciphertext):
-    
-#     success = 0
-#     key_length = 1
-#     shift_length = 24
-    
-#     # verify key length
-
-#     while key_length < shift_length:
-        
-#         correct = 0
-        
-#         # loop over each character in key append to cipher string and possible_plaintext string
-#         for letter_index in range(0, key_length):
-            
-#             cipher = ''
-#             possible_plaintext = ''
-
-#             cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
-
-#             possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
-
-#             # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
-#             # must sort distributions of letters so that they can be mapped by frequency
-#             if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
-#                 correct += 1
-
-#         key_length += 1
-
-#         success = max(success, correct)
-
-#     return success
 
 ################################ TASK 2 FUNCTIONS #######################################
 
@@ -401,6 +421,9 @@ def decrypt_task2(dictionary_2):
     print("The original plaintext is most likely: ")
     print(plaintext_guess)
 
+
+############################################################  MAIN FUNCTION ###################################################
+
 def main():
 
     dictionary_2 = {
@@ -448,49 +471,22 @@ def main():
     }
 
     dict_1 = list(dictionary_1.values())
-    # print(dict_1)
+
     plaintext_sample = random.choice(range(5))
 
     key = generate_key(dict_1[plaintext_sample])
+    print("New Key:" + str(key))
 
     test_encrypt = encrypt(dict_1[plaintext_sample], key)
 
-    print('original plaintext: ' + dict_1[plaintext_sample] + '\n')
+    print('\n Original plaintext: ' + dict_1[plaintext_sample] + '\n')
 
-    print('ciphertext: ' + test_encrypt + '\n')
+    print('\n Generated Ciphertext: ' + '"' + test_encrypt + '"' + '\n')
 
-    test_decrypt = decrypt(test_encrypt, dict_1)
+    user_ciphertext = input("Please enter the ciphertext: \n")
 
-    print('plaintext guess is: ', test_decrypt)
+    test_decrypt = decrypt(user_ciphertext, dict_1)
 
-    # print("Final CipherText: \n" + str(''.join(test_encrypt)))
-    # print("\nFinal: \n" + str(test_encrypt))
-
-
-    # test_decrypt = decrypt(test_encrypt, dict_1)
-
-    # print("\nplaintext guess is: ", test_decrypt, '\n')
-    # select plaintext randomly
-    # shift = random.choice(range(1 ,24))
-    
-    # message = dictionary_1[plaintext_sample]
-
-    # key = [random.choice(range(0 ,26)) for i in range(shift)]
-
-    # print('plaintext is: ', message)
-    
-    # Generating cipher from plaintext
-    # test_cipher = encrypt(message, key, shift)
-    # print('cipher is: ')
-    # print(test_cipher)
-
-    # cipher = input('Enter the ciphertext: ')
-    # print('Original plaintext is: ')
-    # checker = decrypt(cipher, dictionary_1)
-    
-    # if checker == "error":
-    #     decrypt_task2(dictionary_2)
-    # else:
-    #     print(checker)
+    print('\n Plaintext guess is: ', test_decrypt)
 
 main()
