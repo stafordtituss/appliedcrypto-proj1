@@ -24,6 +24,37 @@ dictionary_1 = {
     4: 'ovulatory geriatric hijack nonintoxicants prophylactic nonprotective skyhook warehouser paganized brigading european sassier antipasti tallyho warmer portables selling scheming amirate flanker photosensitizer multistage utile paralyzes indexer backrests tarmac doles siphoned casavas mudslinging nonverbal weevil arbitral painted vespertine plexiglass tanker seaworthiness uninterested anathematizing conduces terbiums wheelbarrow kabalas stagnation briskets counterclockwise hearthsides spuriously s'
 }
 
+expected_letter_frequency = {
+                ' ': 0.127,
+                'e':0.127,
+                't':0.091,
+                'a':0.082,
+                'o':0.075,
+                'i':0.07,
+                'n':0.067,
+                's':0.063,
+                'h':0.061,
+                'r':0.06,
+                'd':0.043,
+                'l':0.04,
+                'u':0.028,
+                'c':0.028,
+                'm':0.024,
+                'w':0.024,
+                'f':0.022,
+                'y':0.02,
+                'g':0.02,
+                'p':0.019,
+                'b':0.015,
+                'v':0.01,
+                'k':0.008,
+                'x':0.002,
+                'j':0.002,
+                'q':0.001,
+                'z':0.001,
+
+}
+
 def build_distribution(ciphertext):
     
     # initiliazed distribution
@@ -107,59 +138,6 @@ def find_key(input_dict, value):
 
     return next((k for k, v in input_dict.items() if v == value), None)
 
-def freq_analyze(ciphertext, plaintext):
-
-    success = 0
-    correct_index = 0
-
-    # loop through dictionary keys and values, call helper function to determine the most correct guess in decrypting ciphertext
-    for key, value in enumerate(plaintext):
-        print(key)
-        print(value)
-        current = decrypt_helper(value, ciphertext)
-        print("Current: " + str(current))
-        
-        if current > success:
-            
-            correct_index = key
-            success = current
-    
-    return plaintext[correct_index]
-
-def decrypt_helper(plaintext_guess, ciphertext):
-    
-    success = 0
-    key_length = 1
-    shift_length = 24
-    
-    # verify key length
-
-    while key_length < shift_length:
-        
-        correct = 0
-        
-        # loop over each character in key append to cipher string and possible_plaintext string
-        for letter_index in range(0, key_length):
-            
-            cipher = ''
-            possible_plaintext = ''
-
-            cipher = ' '.join([ciphertext[i] for i in range(letter_index, len(ciphertext), key_length)])
-
-            possible_plaintext = ' '.join([plaintext_guess[i] for i in range(letter_index, len(plaintext_guess), key_length)])
-
-            # compare frequencies of characters in cipher and possible_plaintext in order to find the mapped letter in ciphertext
-            # must sort distributions of letters so that they can be mapped by frequency
-            if sorted(build_distribution(cipher)) == sorted(build_distribution(possible_plaintext)):
-                correct += 1
-
-        key_length += 1
-
-        success = max(success, correct)
-    
-    return success
-
-
 
 def decrypt(ciphertext, plaintext_dictionary):
 
@@ -203,19 +181,19 @@ def decrypt(ciphertext, plaintext_dictionary):
             list(dictionary_distribution_mapping.values())[3], '\n',
             list(dictionary_distribution_mapping.values())[4], '\n')
 
-        print('Updated ciphertext count: ', cipher_count, '\n')
-        print('\nciphertext_distribution: ', ciphertext_distribution)
+        # print('Updated ciphertext count: ', cipher_count, '\n')
+        # print('\nciphertext_distribution: ', ciphertext_distribution)
 
         for plaintext_distribution in dictionary_distribution_mapping.values():
 
             for i in range(len(alphabet) - 1, -1, -1):
 
                 if ciphertext_distribution[i] < plaintext_distribution[i]:
-                    print(ciphertext_distribution[i], plaintext_distribution[i])
+                    # print(ciphertext_distribution[i], plaintext_distribution[i])
 
                     y=find_key(dictionary_distribution_mapping, plaintext_distribution)
 
-                    print('ITEM TO DELETE: ', y, '\n')
+                    # print('ITEM TO DELETE: ', y, '\n')
 
                     x = possible_plaintexts.remove(find_key(dictionary_distribution_mapping, plaintext_distribution))
                     break
@@ -228,11 +206,67 @@ def decrypt(ciphertext, plaintext_dictionary):
             error_code = "Unable to find Plaintext!"
             return error_code
         else:
-            print("STEP 2")
-            out = freq_analyze(ciphertext, possible_plaintexts)
-            return out
+
+            chi_square_statistic = {}
+
+            for index, plaintext in enumerate(possible_plaintexts):
+
+                dictionary_distribution_mapping[possible_plaintexts[index]] = build_distribution(plaintext)
+
+            print('HOLLLALALA: ',dictionary_distribution_mapping)
+
+            for plaintext_distribution in dictionary_distribution_mapping.values():
+
+                chi = 0
+
+                for index, letter in enumerate(alphabet.keys()):
+
+                    expected_letters = len(ciphertext) * expected_letter_frequency[letter]
+
+                    diff = pow((expected_letters - plaintext_distribution[index]), 2)
+
+                    if plaintext_distribution[index] == 0:
+                        chi += 0
+
+                    else:
+                        chi += diff / plaintext_distribution[index]
+
+                
+                chi_square_statistic[chi] = plaintext_distribution
+
+            print(chi_square_statistic)
+
+            chi_square_statistic_sorted = sorted(list(chi_square_statistic.keys()))
+
+            print(chi_square_statistic_sorted)
 
 
+            min_chi_val = chi_square_statistic_sorted[0]
+
+            print(min_chi_val)
+
+            result = find_key(dictionary_distribution_mapping, chi_square_statistic[min_chi_val])
+
+            return result
+
+            # print('plaintext guess is: ', result)
+                    
+
+
+
+# def calculate_chi_square(ciphertext, possible_plaintexts, expected_frequency):
+
+
+#     for letter in alphabet.keys():
+
+#         expected_letters = len(ciphertext) * expected_frequency[letter]
+
+#         diff = expected_letters - 
+
+
+
+
+# calculate_chi_square('abcd', 'abcd', expected_letter_frequency)
 
 ################################ TASK 2 FUNCTIONS #######################################
 
