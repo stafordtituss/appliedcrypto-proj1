@@ -144,7 +144,7 @@ def decrypt(ciphertext, plaintext_dictionary):
     dictionary_distribution_mapping = {}
 
     cipher_count = len(ciphertext)
-    print("Input Ciphertext Length: " + str(cipher_count))
+    # print("Input Ciphertext Length: " + str(cipher_count))
     plaintext_count = len(plaintext_dictionary[1])
 
     for index, plaintext in enumerate(plaintext_dictionary):
@@ -175,11 +175,11 @@ def decrypt(ciphertext, plaintext_dictionary):
                 cipher_count -= (ciphertext_distribution[i] - max_freq[i])
                 ciphertext_distribution[i] = max_freq[i]  
 
-        print(list(dictionary_distribution_mapping.values())[0], '\n',
-            list(dictionary_distribution_mapping.values())[1], '\n',
-            list(dictionary_distribution_mapping.values())[2], '\n',
-            list(dictionary_distribution_mapping.values())[3], '\n',
-            list(dictionary_distribution_mapping.values())[4], '\n')
+        # print(list(dictionary_distribution_mapping.values())[0], '\n',
+        #     list(dictionary_distribution_mapping.values())[1], '\n',
+        #     list(dictionary_distribution_mapping.values())[2], '\n',
+        #     list(dictionary_distribution_mapping.values())[3], '\n',
+        #     list(dictionary_distribution_mapping.values())[4], '\n')
 
         # print('Updated ciphertext count: ', cipher_count, '\n')
         # print('\nciphertext_distribution: ', ciphertext_distribution)
@@ -200,7 +200,7 @@ def decrypt(ciphertext, plaintext_dictionary):
 
         # possible_plaintexts might be a string of multiple plaintexts if we are not sure which one it could be
         if len(possible_plaintexts) == 1:
-            print("STEP 1")
+            # print("STEP 1")
             return ''.join(possible_plaintexts)
         elif len(possible_plaintexts) == 0:
             error_code = "Unable to find Plaintext!"
@@ -213,7 +213,7 @@ def decrypt(ciphertext, plaintext_dictionary):
 
                 dictionary_distribution_mapping[possible_plaintexts[index]] = build_distribution(plaintext)
 
-            print('HOLLLALALA: ',dictionary_distribution_mapping)
+            # print('HOLLLALALA: ',dictionary_distribution_mapping)
 
             for plaintext_distribution in dictionary_distribution_mapping.values():
 
@@ -234,16 +234,16 @@ def decrypt(ciphertext, plaintext_dictionary):
                 
                 chi_square_statistic[chi] = plaintext_distribution
 
-            print(chi_square_statistic)
+            # print(chi_square_statistic)
 
             chi_square_statistic_sorted = sorted(list(chi_square_statistic.keys()))
 
-            print(chi_square_statistic_sorted)
+            # print(chi_square_statistic_sorted)
 
 
             min_chi_val = chi_square_statistic_sorted[0]
 
-            print(min_chi_val)
+            # print(min_chi_val)
 
             result = find_key(dictionary_distribution_mapping, chi_square_statistic[min_chi_val])
 
@@ -509,18 +509,18 @@ def main():
     plaintext_sample = random.choice(range(5))
 
     key = generate_key(dict_1[plaintext_sample])
-    print("New Key:" + str(key))
+    # print("New Key:" + str(key))
 
-    test_encrypt = encrypt(dict_1[plaintext_sample], key)
+    # test_encrypt = encrypt(dict_1[plaintext_sample], key)
 
-    print('\n Original plaintext: ' + dict_1[plaintext_sample] + '\n')
+    # print('\n Original plaintext: ' + dict_1[plaintext_sample] + '\n')
 
-    print('\n Generated Ciphertext: ' + '"' + test_encrypt + '"' + '\n')
+    # print('\n Generated Ciphertext: ' + '"' + test_encrypt + '"' + '\n')
 
-    user_ciphertext = input("Please enter the ciphertext: \n")
+    user_ciphertext = input("\nPlease enter the ciphertext: \n")
 
     test_decrypt = decrypt(user_ciphertext, dict_1)
 
-    print('\n Plaintext guess is: ', test_decrypt)
+    print('\n Plaintext guess is:\n', test_decrypt)
 
 main()
